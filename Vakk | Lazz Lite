@@ -1,10 +1,9 @@
--- Vakk | Lazz Hub Lite
+-- Vakk | Lazz Hub Lite (Fixed)
 repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
-local TS = game:GetService("TweenService")
 
 local LP = Players.LocalPlayer
 
@@ -14,15 +13,12 @@ local LAGGER_CARRY_SPEED = 24.5
 
 local speedMode = false
 local laggerToggled = false
-local laggerPhase = 0
 local autoBatEnabled = false
 local antiRagdollEnabled = false
 local infJumpEnabled = false
 local autoLeftEnabled = false
 local autoRightEnabled = false
 local autoTPEnabled = false
-
-local _guiLocked = false
 
 -- Simple Lite GUI
 local gui = Instance.new("ScreenGui")
@@ -31,8 +27,8 @@ gui.ResetOnSpawn = false
 gui.Parent = LP:WaitForChild("PlayerGui")
 
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.new(0, 360, 0, 420)
-main.Position = UDim2.new(0.5, -180, 0.5, -210)
+main.Size = UDim2.new(0, 360, 0, 480)
+main.Position = UDim2.new(0.5, -180, 0.5, -240)
 main.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
 main.BorderSizePixel = 0
 Instance.new("UICorner", main).CornerRadius = UDim.new(0, 12)
@@ -43,7 +39,7 @@ title.BackgroundTransparency = 1
 title.Text = "Vakk | Lazz Hub Lite"
 title.TextColor3 = Color3.fromRGB(255, 0, 0)
 title.Font = Enum.Font.GothamBold
-title.TextSize = 16
+title.TextSize = 18
 
 local function mkBtn(txt, y, callback)
     local btn = Instance.new("TextButton", main)
@@ -55,54 +51,55 @@ local function mkBtn(txt, y, callback)
     btn.Font = Enum.Font.GothamBold
     btn.TextSize = 14
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
+    
     btn.MouseButton1Click:Connect(callback)
     return btn
 end
 
-mkBtn("Speed Mode: Normal", 60, function(self)
+-- Buttons (Fixed callbacks)
+mkBtn("Speed Mode: Normal", 60, function()
     speedMode = not speedMode
-    self.Text = speedMode and "Speed Mode: Carry" or "Speed Mode: Normal"
-end)
-
-mkBtn("Lagger Mode: OFF", 120, function(self)
-    laggerToggled = not laggerToggled
-    self.Text = laggerToggled and "Lagger Mode: ON" or "Lagger Mode: OFF"
-end)
-
-mkBtn("Auto Bat: OFF", 180, function(self)
-    autoBatEnabled = not autoBatEnabled
-    self.Text = autoBatEnabled and "Auto Bat: ON" or "Auto Bat: OFF"
-end)
-
-mkBtn("Auto Left: OFF", 240, function(self)
-    autoLeftEnabled = not autoLeftEnabled
-    self.Text = autoLeftEnabled and "Auto Left: ON" or "Auto Left: OFF"
-end)
-
-mkBtn("Auto Right: OFF", 300, function(self)
-    autoRightEnabled = not autoRightEnabled
-    self.Text = autoRightEnabled and "Auto Right: ON" or "Auto Right: OFF"
-end)
-
-mkBtn("Anti Ragdoll: OFF", 360, function(self)
-    antiRagdollEnabled = not antiRagdollEnabled
-    self.Text = antiRagdollEnabled and "Anti Ragdoll: ON" or "Anti Ragdoll: OFF"
-end)
-
--- Core Movement
-RunService.Heartbeat:Connect(function()
-    local char = LP.Character
-    if not char then return end
-    local hum = char:FindFirstChildOfClass("Humanoid")
-    local root = char:FindFirstChild("HumanoidRootPart")
-    if not hum or not root then return end
-
-    local speed = laggerToggled and (laggerPhase == 2 and LAGGER_CARRY_SPEED or LAGGER_SPEED) or (speedMode and CS or NS)
-
-    local md = hum.MoveDirection
-    if md.Magnitude > 0 then
-        root.Velocity = Vector3.new(md.X * speed, root.Velocity.Y, md.Z * speed)
+    -- Update button text properly
+    for _, child in ipairs(main:GetChildren()) do
+        if child:IsA("TextButton") and child.Text:find("Speed Mode") then
+            child.Text = speedMode and "Speed Mode: Carry" or "Speed Mode: Normal"
+            break
+        end
     end
 end)
 
-print("✅ Vakk | Lazz Hub Lite Loaded")
+mkBtn("Lagger Mode: OFF", 120, function()
+    laggerToggled = not laggerToggled
+    for _, child in ipairs(main:GetChildren()) do
+        if child:IsA("TextButton") and child.Text:find("Lagger Mode") then
+            child.Text = laggerToggled and "Lagger Mode: ON" or "Lagger Mode: OFF"
+            break
+        end
+    end
+end)
+
+mkBtn("Auto Bat: OFF", 180, function()
+    autoBatEnabled = not autoBatEnabled
+    for _, child in ipairs(main:GetChildren()) do
+        if child:IsA("TextButton") and child.Text:find("Auto Bat") then
+            child.Text = autoBatEnabled and "Auto Bat: ON" or "Auto Bat: OFF"
+            break
+        end
+    end
+end)
+
+mkBtn("Auto Left: OFF", 240, function()
+    autoLeftEnabled = not autoLeftEnabled
+    for _, child in ipairs(main:GetChildren()) do
+        if child:IsA("TextButton") and child.Text:find("Auto Left") then
+            child.Text = autoLeftEnabled and "Auto Left: ON" or "Auto Left: OFF"
+            break
+        end
+    end
+end)
+
+mkBtn("Auto Right: OFF", 300, function()
+    autoRightEnabled = not autoRightEnabled
+    for _, child in ipairs(main:GetChildren()) do
+        if child:IsA("TextButton") and child.Text:find("Auto Right") then
+            child.Text
