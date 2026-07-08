@@ -1,0 +1,108 @@
+-- Vakk | Lazz Hub Lite
+repeat task.wait() until game:IsLoaded()
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UIS = game:GetService("UserInputService")
+local TS = game:GetService("TweenService")
+
+local LP = Players.LocalPlayer
+
+local NS, CS = 60, 30
+local LAGGER_SPEED = 15
+local LAGGER_CARRY_SPEED = 24.5
+
+local speedMode = false
+local laggerToggled = false
+local laggerPhase = 0
+local autoBatEnabled = false
+local antiRagdollEnabled = false
+local infJumpEnabled = false
+local autoLeftEnabled = false
+local autoRightEnabled = false
+local autoTPEnabled = false
+
+local _guiLocked = false
+
+-- Simple Lite GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "LazzHubLite"
+gui.ResetOnSpawn = false
+gui.Parent = LP:WaitForChild("PlayerGui")
+
+local main = Instance.new("Frame", gui)
+main.Size = UDim2.new(0, 360, 0, 420)
+main.Position = UDim2.new(0.5, -180, 0.5, -210)
+main.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+main.BorderSizePixel = 0
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 12)
+
+local title = Instance.new("TextLabel", main)
+title.Size = UDim2.new(1, 0, 0, 50)
+title.BackgroundTransparency = 1
+title.Text = "Vakk | Lazz Hub Lite"
+title.TextColor3 = Color3.fromRGB(255, 0, 0)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+
+local function mkBtn(txt, y, callback)
+    local btn = Instance.new("TextButton", main)
+    btn.Size = UDim2.new(0.9, 0, 0, 48)
+    btn.Position = UDim2.new(0.05, 0, 0, y)
+    btn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    btn.Text = txt
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 14
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
+    btn.MouseButton1Click:Connect(callback)
+    return btn
+end
+
+mkBtn("Speed Mode: Normal", 60, function(self)
+    speedMode = not speedMode
+    self.Text = speedMode and "Speed Mode: Carry" or "Speed Mode: Normal"
+end)
+
+mkBtn("Lagger Mode: OFF", 120, function(self)
+    laggerToggled = not laggerToggled
+    self.Text = laggerToggled and "Lagger Mode: ON" or "Lagger Mode: OFF"
+end)
+
+mkBtn("Auto Bat: OFF", 180, function(self)
+    autoBatEnabled = not autoBatEnabled
+    self.Text = autoBatEnabled and "Auto Bat: ON" or "Auto Bat: OFF"
+end)
+
+mkBtn("Auto Left: OFF", 240, function(self)
+    autoLeftEnabled = not autoLeftEnabled
+    self.Text = autoLeftEnabled and "Auto Left: ON" or "Auto Left: OFF"
+end)
+
+mkBtn("Auto Right: OFF", 300, function(self)
+    autoRightEnabled = not autoRightEnabled
+    self.Text = autoRightEnabled and "Auto Right: ON" or "Auto Right: OFF"
+end)
+
+mkBtn("Anti Ragdoll: OFF", 360, function(self)
+    antiRagdollEnabled = not antiRagdollEnabled
+    self.Text = antiRagdollEnabled and "Anti Ragdoll: ON" or "Anti Ragdoll: OFF"
+end)
+
+-- Core Movement
+RunService.Heartbeat:Connect(function()
+    local char = LP.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not hum or not root then return end
+
+    local speed = laggerToggled and (laggerPhase == 2 and LAGGER_CARRY_SPEED or LAGGER_SPEED) or (speedMode and CS or NS)
+
+    local md = hum.MoveDirection
+    if md.Magnitude > 0 then
+        root.Velocity = Vector3.new(md.X * speed, root.Velocity.Y, md.Z * speed)
+    end
+end)
+
+print("✅ Vakk | Lazz Hub Lite Loaded")
